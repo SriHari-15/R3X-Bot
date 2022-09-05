@@ -13,7 +13,24 @@ module.exports = {
         console.error(error);
         await interaction.reply({
           content: `Something went wrong while executing this command...`,
-          ephermal: true,
+          ephemeral: true,
+        });
+      }
+    } else if (interaction.isButton()) {
+      const { buttons } = client;
+      const { customId } = interaction;
+      const button = buttons.get(customId);
+      if (!button) {
+        return new Error(`There is no button for ${customId}!`);
+      }
+
+      try {
+        await button.execute(interaction, client);
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: `Something went wrong while executing this command...`,
+          ephemeral: true,
         });
       }
     }
