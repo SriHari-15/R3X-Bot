@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -6,13 +6,30 @@ module.exports = {
     .setDescription("Returns your ping"),
   async execute(interaction, client) {
     const message = await interaction.deferReply({
-        fetchReply: true
-    })
+      fetchReply: true,
+      ephemeral: true,
+    });
 
-    const newMessage = `API Latency: ${client.ws.ping}\nClient Ping: ${message.createdTimestamp - interaction.createdTimestamp}`
+    const pingEmbed = new EmbedBuilder()
+      .setAuthor({
+        name: interaction.user.tag,
+        iconURL: interaction.user.displayAvatarURL(),
+      })
+      .setTitle("Ping")
+      .setFooter({
+        text: client.user.tag,
+        iconURL: client.user.displayAvatarURL(),
+      })
+      .setDescription(
+        `API Latency: ${client.ws.ping}\nClient Latency: ${
+          message.createdTimestamp - interaction.createdTimestamp
+        }`
+      )
+      .setColor(0x000001)
+      .setTimestamp();
+
     await interaction.editReply({
-        content: newMessage
-    })
-
-  }
+      embeds: [pingEmbed],
+    });
+  },
 };
